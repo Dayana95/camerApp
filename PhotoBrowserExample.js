@@ -1,8 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
-
 import React, { Component } from 'react';
 import {
   ActionSheetIOS,
@@ -25,7 +20,8 @@ const EXAMPLES = [
     title: 'Library photos',
     description: 'Photos from Gallery',
     startOnGrid: true,
-    displayActionButton: true,
+    displayNavArrows: true,
+    displaySelectionButtons: true,
   },
 ];
 
@@ -80,7 +76,25 @@ export default class PhotoBrowserExample extends Component {
   }
 
   _onSelectionChanged(media, index, selected) {
-    alert(`${media.photo} selection status: ${selected}`);
+    //alert(`${media.photo} selection status: ${selected}`);
+
+    db.singleRef.child('list').orderByChild('path').equalTo(media.photo).once('value', function(snapshot){
+          if (snapshot.val() === 'undefined' || snapshot.val() === null) {
+                    var single = db.singleRef.child('list').push();
+                            single.set({
+                              savedAt: firebaseTimeStamp,
+                              path: media.photo
+                            }, function(){
+                              console.log('Added to firebase');
+                            });
+
+                            alert('saved in Firebase!');
+          }
+          else{
+            alert('This file is already saved in Firebase!');
+          }
+    })
+  
   }
 
   _onActionButton(media, index) {

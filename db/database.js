@@ -9,6 +9,7 @@ export default cameraDb = {
     rootRef: database.ref(),
     configs: database.ref('_configurations'),
     imgRef: database.ref('images'),
+    singleRef: database.ref('single')
 
 };
 
