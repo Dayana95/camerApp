@@ -23,6 +23,12 @@ const EXAMPLES = [
     displayNavArrows: true,
     displaySelectionButtons: true,
   },
+  {
+    title: 'Your saved photos',
+    description: 'Photos saved in Firebase',
+    startOnGrid: true,
+    displayNavArrows: true,
+  }
 ];
 
 CameraRoll.getPhotos({
@@ -33,11 +39,66 @@ CameraRoll.getPhotos({
   data.edges.forEach(d => media.push({
     photo: d.node.image.uri,
   }));
+
+
   EXAMPLES[0].media = media;
 
 }).catch(error => alert(error));
 
+db.singleRef.child('list').once('value', function(datasnapshot){
+  const media = [];
+  datasnapshot.forEach(function(childsnapshot){
+      var item = {
+        photo: childsnapshot.val().path,
+        selected: true,
+      }
 
+      media.push(item);
+  });
+
+ 
+
+    EXAMPLES[0].media =  EXAMPLES[0].media.concat(media);
+
+        function dedupeByKey(arr, key) {
+          const tmp = {};
+          return arr.reduce((p, c) => {
+            const k = c[key];
+            if (tmp[k]) return p;
+            tmp[k] = 1;
+            return p.concat(c);
+          }, []);
+        }
+
+
+    
+     var part2 = EXAMPLES[0].media;
+     var part1 = media;
+
+     var test = part1.concat(part2);
+
+     EXAMPLES[0].media = dedupeByKey(test, 'photo');
+});
+
+
+
+
+
+
+db.singleRef.child('list').on('value', function(datasnapshot){
+  const media = [];
+  datasnapshot.forEach(function(childsnapshot){
+      var item = {
+        photo: childsnapshot.val().path,
+      }
+
+      media.push(item);
+  });
+
+  console.log(media);
+    EXAMPLES[1].media = media;
+    console.log(EXAMPLES[1].media);
+});
 
 
 
@@ -141,7 +202,7 @@ export default class PhotoBrowserExample extends Component {
               style={{fontSize: 20, color: 'green'}}
               styleDisabled={{color: 'red'}}
               onPress={() => this._handlePress()}>
-              Back up your photos!
+              Back up all your photos!
       </Button>
         </View>
       );
