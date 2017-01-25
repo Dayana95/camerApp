@@ -17,7 +17,7 @@ import db, { firebaseAuth, firebaseTimeStamp} from './db/database';
 
 const EXAMPLES = [
   {
-    title: 'Library photos',
+    title: 'All your photos',
     description: 'Photos from Gallery',
     startOnGrid: true,
     displayNavArrows: true,
@@ -28,6 +28,12 @@ const EXAMPLES = [
     description: 'Photos saved in Firebase',
     startOnGrid: true,
     displayNavArrows: true,
+  },
+  {
+    title: 'Photos not saved',
+    description:'Photos not saved yet',
+    startOnGrid: true,
+    displayNavArrows:true,
   }
 ];
 
@@ -139,7 +145,8 @@ export default class PhotoBrowserExample extends Component {
   _onSelectionChanged(media, index, selected) {
     //alert(`${media.photo} selection status: ${selected}`);
 
-    db.singleRef.child('list').orderByChild('path').equalTo(media.photo).once('value', function(snapshot){
+    if (selected == true) {
+           db.singleRef.child('list').orderByChild('path').equalTo(media.photo).once('value', function(snapshot){
           if (snapshot.val() === 'undefined' || snapshot.val() === null) {
                     var single = db.singleRef.child('list').push();
                             single.set({
@@ -155,6 +162,25 @@ export default class PhotoBrowserExample extends Component {
             alert('This file is already saved in Firebase!');
           }
     })
+    }else{
+                 
+                 db.singleRef.child('list').orderByChild('path').equalTo(media.photo).once('value', function(snapshot){
+                            if (snapshot.val() === 'undefined' || snapshot.val() === null) {
+                                console.log('Not in Firebase');
+                              }else{
+                                snapshot.forEach(function(data){
+                                  var key = data.key;
+                                  console.log(data.key);
+                                  db.singleRef.child('list').child(key).remove();
+                                alert('Removed from Firebase')
+                                })
+                                
+                              }
+                  })
+
+    }
+
+   
   
   }
 
