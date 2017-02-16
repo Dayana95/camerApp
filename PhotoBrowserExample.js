@@ -38,7 +38,7 @@ const EXAMPLES = [
 ];
 
 CameraRoll.getPhotos({
-  first: 100,
+  first: 25000000,
   assetType: 'Photos',
 }).then((data) => {
   const media = [];
@@ -51,7 +51,7 @@ CameraRoll.getPhotos({
 
 }).catch(error => alert(error));
 
-db.singleRef.child('list').once('value', function(datasnapshot){
+db.singleRef.child('list').on('value', function(datasnapshot){
   const media = [];
   datasnapshot.forEach(function(childsnapshot){
       var item = {
@@ -62,7 +62,7 @@ db.singleRef.child('list').once('value', function(datasnapshot){
       media.push(item);
   });
 
- 
+
 
     EXAMPLES[0].media =  EXAMPLES[0].media.concat(media);
 
@@ -77,13 +77,20 @@ db.singleRef.child('list').once('value', function(datasnapshot){
         }
 
 
-    
+
      var part2 = EXAMPLES[0].media;
      var part1 = media;
 
      var test = part1.concat(part2);
 
      EXAMPLES[0].media = dedupeByKey(test, 'photo');
+     var galleryLength = EXAMPLES[0].media.length;
+     var mediaLength = media.length;
+
+     var finalLength = galleryLength - mediaLength;
+     console.log("Length", finalLength);
+
+     EXAMPLES[2].media = EXAMPLES[0].media.slice(0, finalLength);
 });
 
 
@@ -139,7 +146,7 @@ export default class PhotoBrowserExample extends Component {
         console.log('Backed up!');
       })
     }
-   
+
   }
 
   _onSelectionChanged(media, index, selected) {
@@ -163,7 +170,7 @@ export default class PhotoBrowserExample extends Component {
           }
     })
     }else{
-                 
+
                  db.singleRef.child('list').orderByChild('path').equalTo(media.photo).once('value', function(snapshot){
                             if (snapshot.val() === 'undefined' || snapshot.val() === null) {
                                 console.log('Not in Firebase');
@@ -174,14 +181,14 @@ export default class PhotoBrowserExample extends Component {
                                   db.singleRef.child('list').child(key).remove();
                                 alert('Removed from Firebase')
                                 })
-                                
+
                               }
                   })
 
     }
 
-   
-  
+
+
   }
 
   _onActionButton(media, index) {
@@ -235,7 +242,7 @@ export default class PhotoBrowserExample extends Component {
     }
 
 
-    
+
 
     const {
       media,
@@ -262,8 +269,8 @@ export default class PhotoBrowserExample extends Component {
         onSelectionChanged={this._onSelectionChanged}
         onActionButton={this._onActionButton}
       />
-        
-      
+
+
     );
   }
 
