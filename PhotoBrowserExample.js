@@ -13,6 +13,8 @@ import {
 import Button from 'react-native-button';
 import PhotoBrowser from 'react-native-photo-browser';
 import db, { firebaseAuth, firebaseTimeStamp} from './db/database';
+import RNAssetThumbnail from  'react-native-asset-thumbnail';
+
 
 
 const EXAMPLES = [
@@ -34,8 +36,31 @@ const EXAMPLES = [
     description:'Photos not saved yet',
     startOnGrid: true,
     displayNavArrows:true,
+  },
+  {
+    title: 'All your videos',
+    description: 'Videos from Gallery',
+    startOnGrid: true,
+    displayNavArrows: true,
+    displaySelectionButtons: true,
   }
 ];
+
+//GET VIDEOS FROM PHONE
+
+  CameraRoll.getPhotos({
+    first: 2500000,
+    assetType: 'Videos',
+  }).then((data) => {
+    const videos = [];
+    data.edges.forEach(d => videos.push({
+      thumb: d.node.image,
+    }));
+
+    EXAMPLES[3].media = videos;
+  }).catch(error => alert(error));
+
+//END VIDEOS EXTRACTION
 
 CameraRoll.getPhotos({
   first: 25000000,
